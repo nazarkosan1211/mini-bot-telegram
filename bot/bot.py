@@ -1,15 +1,16 @@
 # =======================
-# bot.py (Final Railway Safe)
+# bot.py (Railway safe + conflict-free)
 # =======================
 
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 import requests
+import os
 
 # =======================
 # CONFIG
 # =======================
-# Ganti ini dengan URL server Flask kamu (pastikan online)
+# Ganti ini dengan URL server Flask kamu
 API_URL = "https://mini-bot-telegram-production.up.railway.app"
 
 # =======================
@@ -58,8 +59,8 @@ async def task(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # MAIN
 # =======================
 if __name__ == "__main__":
-    # Paste token bot langsung di sini
-    TOKEN = "8707863883:AAGePtyGNttlo3EfLT1GXGKlBqFY9TBQ5G0"
+    # Masukkan token langsung atau via Environment Variable Railway
+    TOKEN = os.environ.get("BOT_TOKEN") or "8707863883:AAGePtyGNttlo3EfLT1GXGKlBqFY9TBQ5G0"
 
     # Build bot application
     app = ApplicationBuilder().token(TOKEN).build()
@@ -68,6 +69,6 @@ if __name__ == "__main__":
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("task", task))
 
-    # Run polling (Railway safe, tunggu 1 instance aja)
-    print("Bot running...")
+    # Hanya 1 instance polling → aman di Railway
+    print("Bot running... (safe from conflicts)")
     app.run_polling()
