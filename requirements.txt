@@ -1,4 +1,6 @@
 flask
 flask-cors
+psycopg2-binary
+sqlalchemy
 python-telegram-bot==20.3
 requests
