@@ -11,9 +11,7 @@ CORS(app)
 # =======================
 # DATABASE
 # =======================
-# Ganti DATABASE_URL sesuai PostgreSQL Railway kamu
 DATABASE_URL = "postgresql://postgres:VeHwVtiMUtrLddWDoPoGggYAyupuASZS@turntable.proxy.rlwy.net:27947/railway"
-
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
@@ -50,7 +48,7 @@ def start_user():
     ref = str(data.get("ref")) if data.get("ref") else None
 
     if not user_id:
-        return jsonify({"status":"error", "message":"user_id kosong"}), 400
+        return jsonify({"status":"error","message":"user_id kosong"}), 400
 
     session = SessionLocal()
     user = session.query(User).filter(User.user_id == user_id).first()
@@ -58,7 +56,6 @@ def start_user():
         user = User(user_id=user_id, ref_by=ref if ref != user_id else None)
         session.add(user)
         session.commit()
-        # update referrer
         if ref:
             ref_user = session.query(User).filter(User.user_id == ref).first()
             if ref_user and ref_user.ref_count < REF_LIMIT:
@@ -66,13 +63,13 @@ def start_user():
                 ref_user.ref_count += 1
                 session.commit()
     session.close()
-    return jsonify({"status": "success", "user_id": user_id})
+    return jsonify({"status":"success","user_id":user_id})
 
 @app.route("/add_coin", methods=["POST"])
 def add_coin():
     data = request.json or {}
     user_id = str(data.get("user_id"))
-    amount = int(data.get("amount", 0))
+    amount = int(data.get("amount",0))
 
     if not user_id:
         return jsonify({"status":"error","message":"user_id kosong"}), 400
@@ -81,27 +78,27 @@ def add_coin():
     user = session.query(User).filter(User.user_id == user_id).first()
     if not user:
         session.close()
-        return jsonify({"status": "error", "message": "User not found"}), 404
+        return jsonify({"status":"error","message":"User not found"}), 404
 
-    if amount > 0:
+    if amount>0:
         if user.tasks_done >= DAILY_TASK_LIMIT:
             session.close()
-            return jsonify({"status": "blocked", "reason": "limit", "wait": 0})
+            return jsonify({"status":"blocked","reason":"limit","wait":0})
         user.coins += amount
         user.tasks_done += 1
         user.remaining_tasks = DAILY_TASK_LIMIT - user.tasks_done
         session.commit()
 
     result = {
-        "status": "success",
-        "coins": user.coins,
-        "tasks_done": user.tasks_done,
-        "remaining_tasks": user.remaining_tasks,
-        "ref_count": user.ref_count
+        "status":"success",
+        "coins":user.coins,
+        "tasks_done":user.tasks_done,
+        "remaining_tasks":user.remaining_tasks,
+        "ref_count":user.ref_count
     }
     session.close()
     return jsonify(result)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    port = int(os.environ.get("PORT",5000))
+    app.run(host="0.0.0.0",port=port,debug=True)
