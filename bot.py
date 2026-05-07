@@ -1,4 +1,3 @@
-import os
 import requests
 from telegram import Update, Bot
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
@@ -9,7 +8,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 TOKEN = "8707863883:AAGePtyGNttlo3EfLT1GXGKlBqFY9TBQ5G0"
 
 # =======================
-# SERVER URL PUBLIC (udah aku isi)
+# SERVER URL PUBLIC
 # =======================
 SERVER_URL = "https://mini-bot-telegram-production.up.railway.app"
 
