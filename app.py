@@ -11,7 +11,7 @@ CORS(app)
 # =======================
 # DATABASE
 # =======================
-# DATABASE_URL dari kamu
+# Ganti DATABASE_URL sesuai PostgreSQL Railway kamu
 DATABASE_URL = "postgresql://postgres:VeHwVtiMUtrLddWDoPoGggYAyupuASZS@turntable.proxy.rlwy.net:27947/railway"
 
 engine = create_engine(DATABASE_URL)
@@ -45,9 +45,12 @@ REF_POINT = 10
 # =======================
 @app.route("/start_user", methods=["POST"])
 def start_user():
-    data = request.json
+    data = request.json or {}
     user_id = str(data.get("user_id"))
     ref = str(data.get("ref")) if data.get("ref") else None
+
+    if not user_id:
+        return jsonify({"status":"error", "message":"user_id kosong"}), 400
 
     session = SessionLocal()
     user = session.query(User).filter(User.user_id == user_id).first()
@@ -67,9 +70,12 @@ def start_user():
 
 @app.route("/add_coin", methods=["POST"])
 def add_coin():
-    data = request.json
+    data = request.json or {}
     user_id = str(data.get("user_id"))
     amount = int(data.get("amount", 0))
+
+    if not user_id:
+        return jsonify({"status":"error","message":"user_id kosong"}), 400
 
     session = SessionLocal()
     user = session.query(User).filter(User.user_id == user_id).first()
@@ -77,7 +83,6 @@ def add_coin():
         session.close()
         return jsonify({"status": "error", "message": "User not found"}), 404
 
-    # daily task limit
     if amount > 0:
         if user.tasks_done >= DAILY_TASK_LIMIT:
             session.close()
